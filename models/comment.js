@@ -8,10 +8,6 @@ const Comment = sequelize.define('comment', {
         autoIncrement: true,
         primaryKey: true
     },
-    // amount: {
-    //     type: Sequelize.INTEGER,
-    //     allowNull: false
-    // },
     text: {
         type: Sequelize.STRING,
         allowNull: false

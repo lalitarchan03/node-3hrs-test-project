@@ -24,7 +24,7 @@ app.use('/comment', commentRoute);
 Comment.belongsTo(Post);
 Post.hasMany(Comment);
 
-sequelize.sync({ force: true })
+sequelize.sync()
     .then(result => {
         app.listen(3000)
     })

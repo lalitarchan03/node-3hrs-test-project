@@ -1,14 +1,9 @@
 
-// function generateUniqueId() {
-//     return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-//   }
-
 const linkInput = document.getElementById('link');
 const descInput = document.getElementById('disc');
 
-// const msg = document.getElementById('msg');
 const btn = document.querySelector('.btn');
-// const uuid = ('uuid');
+
 const submitButton = document.getElementById('submit');
 const id = document.getElementById('postId');
 
@@ -23,7 +18,6 @@ function addPost(e) {
 
     const link = e.target.link.value;
     const description = e.target.disc.value;
-    // const category = e.target.categ.value;
 
     const postDetails = {
         link,
@@ -73,6 +67,9 @@ function showDetailsOnScreen(newPostDetail) {
     commentForm.innerHTML = `
       <input type="text" id="commentInp" placeholder="Add your comment" required>
       <button type="submit">Post</button>
+      <ul id="comments">
+      <!-- Comments will be dynamically added here -->
+      </ul>
     `;
     li.appendChild(commentForm);
 
@@ -83,67 +80,61 @@ function showDetailsOnScreen(newPostDetail) {
 
     // Hide the comment form initially
     commentForm.style.display = 'none';
-
+    const postId = newPostDetail.id;
     // Show the comment form when the comment button is clicked
     commentButton.addEventListener('click', function() {
       commentForm.style.display = 'block';
-      axios.get(`http://localhost:3000/comment/get-comments?id=${newPostDetail.id}`)
+      axios.get(`http://localhost:3000/comment/get-comments?id=${postId}`)
         .then((res) => {
-            for (let i=0; i < res.data.allPostDetail.length; i++) {
+            for (let i=0; i < res.data.allCommentDetail.length; i++) {
                 // console.log('GET', res.data.allUserDetail[i]);
-                showDetailsOnScreen(res.data.allPostDetail[i]);
+                // showComments(res.data.allCommentDetail[i]);
+                const commentList = document.createElement('li');
+                commentList.textContent = `Anonymous:- ${res.data.allCommentDetail[i].text}`;
+                li.appendChild(commentList);
             }
         })
         .catch((err) => {
             console.log(err);
         })
       
-
-
     });
-
-    // commentButton.addEventListener('click', function() {
-    //     commentForm.style.display = 'block';
-    //   });
   
     // Handle the submission of comments
     commentForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    const commentInput = commentForm.querySelector('input[type="text"]');
-    const commentText = commentInput.value;
+        event.preventDefault();
     
-      const commentDetail = {
-        commentText
-      };
-      axios.post("http://localhost:3000/comment/add-comment", commentDetail)
+        const commentText = event.target.commentInp.value;;
+        console.log(commentText, "inside comment post");
+        
+        const commentDetail = {
+            commentText,
+            postId
+        };
+        console.log(commentDetail);
+
+        axios.post("http://localhost:3000/comment/add-comment", commentDetail)
         .then(res => {
             form.reset();
-            showDetailsOnScreen(res.data.newPostDetail)
+            console.log(res.data);
+            // showComments(res.data.newCommentDetail)
+            const commentList = document.createElement('li');
+            commentList.textContent = `Anonymous:- ${res.data.newCommentDetail.text}`;
+            li.appendChild(commentList);
 
         })
         .catch(err => {
             console.log(err)
         })
 
-    // Add the comment to the comments div
-    // const commentParagraph = document.createElement('p');
-    // commentParagraph.textContent = commentText;
-    // commentsDiv.appendChild(commentParagraph);
-
-    // Clear the comment input field
-    commentInput.value = '';
-
-    // You can make a POST request to your server here to save the comment data
     });
 
-    // Append the li element to the list of items
     items.appendChild(li);
 
     
 };
 
-
-const getAllPosts = (req, res, next) => {
+const getAllPosts = () => {
     axios.get("http://localhost:3000/post/get-posts")
         .then((res) => {
             for (let i=0; i < res.data.allPostDetail.length; i++) {

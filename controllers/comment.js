@@ -3,16 +3,17 @@ const sequelize = require('../util/db');
 
 exports.postAddComment = async (req, res , next) => {
 
-    // console.log('backend' , req.body);
+    console.log('backend' , req.body.commentText);
 
-    if (!req.body.link || !req.body.description) {
+    if (!req.body.commentText) {
         throw new Error('Comment cannot be blank');
     };
 
     try{
-        const text = req.params.text;
+        const text = req.body.commentText;
+        const postId = req.body.postId
 
-        const data = await Comment.create({text: text});
+        const data = await Comment.create({text: text, postId: postId});
 
         res.status(201).json({newCommentDetail: data});
     }
@@ -23,7 +24,12 @@ exports.postAddComment = async (req, res , next) => {
 };
 
 exports.getAllComments = (req, res, next) => {
-    Comment.findAll()
+    const postId = req.query.id;
+    Comment.findAll({
+            where: {
+                postId: postId
+            }
+        })
         .then(data => {
             res.status(200).json({allCommentDetail: data});
         })

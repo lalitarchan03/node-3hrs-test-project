@@ -8,10 +8,6 @@ const Post = sequelize.define('post', {
         autoIncrement: true,
         primaryKey: true
     },
-    // amount: {
-    //     type: Sequelize.INTEGER,
-    //     allowNull: false
-    // },
     link: {
         type: Sequelize.STRING,
         allowNull: false
